@@ -7,8 +7,8 @@ import wand.image as wi
 def getsepia(image: BytesIO):
     io =BytesIO(image)
     io.seek(0)
-    with Image() as dst_image:
-        with Image(blob=io) as src_image:
+    with wi.Image() as dst_image:
+        with wi.Image(blob=io) as src_image:
             for frame in src_image.sequence:
                 frame.sepia_tone(threshold=0.8)
                 dst_image.sequence.append(frame)

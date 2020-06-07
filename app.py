@@ -12,7 +12,7 @@ def getsepia(image: BytesIO):
             for frame in src_image.sequence:
                 frame.sepia_tone(threshold=0.8)
                 dst_image.sequence.append(frame)
-        bts = dst_image.make_blob('gif')
+        bts = dst_image.make_blob()
         i = BytesIO(bts)
         i.seek(0)
         return(i)

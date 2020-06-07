@@ -1,32 +1,35 @@
 from flask import Flask, render_template,request,send_file
 from io import BytesIO
-from PIL import Image,ImageDraw,ImageFont,ImageEnhance,ImageOps
+from PIL import Image,ImageDraw,ImageFont,ImageEnhance,ImageOps,ImageFilter,ImageSequence
 app = Flask(__name__)
 import requests
 def checktoken(tok):
-    if tok == 'atMoMn2Pg3EUmZ065QBvdJN4IcjNxCQRMv1oZTZWg98i7HelIdvJwHtZFKPgCtf':
-        return True
+    if str(tok) == 'atMoMn2Pg3EUmZ065QBvdJN4IcjNxCQRMv1oZTZWg98i7HelIdvJwHtZFKPgCtf':
+        return(True)
 def getimg(url):
     r = requests.get(url)
     if r.status_code == 200:
         # imgf = await aiofiles.open(f'avatar{name}.png', mode='wb')
         byt = r.content
-        return (byt)
+        return(byt)
         # await imgf.close()
     else:
         return False
     del r
 
 def getpixel(image: BytesIO):
-    with Image.open(BytesIO(image)) as t:
-        imgSmall = t.resize((32, 32), resample=Image.BILINEAR)
-        # imgSmall = t.resize((256, 256))
-        fim = imgSmall.resize(t.size, Image.NEAREST)
+    io =BytesIO(image)
+    io.seek(0)
+    with Image.open(io) as t:
+        flist = []
+        for frame in ImageSequence.Iterator(t):
+            imgSmall = frame.resize((32, 32), resample=Image.BILINEAR)
+            fim = imgSmall.resize(frame.size, Image.NEAREST)
+            flist.append(fim)
         retimg = BytesIO()
-        fim.save(retimg, 'png')
-
+        flist[0].save(retimg, format='gif', save_all=True, append_images=flist[1:])
     retimg.seek(0)
-    return (retimg)
+    return(retimg)
 
 
 
@@ -212,7 +215,15 @@ def getpaint(image: BytesIO):
     bufferedio.seek(0)
     return (bufferedio)
 
-
+def badimg(image : BytesIO):
+    with Image.open(BytesIO(image)) as im:
+        back = Image.open('bad.png')
+        t = im.resize((200, 200), 5)
+        back.paste(t, (20, 150))
+        bufferedio = BytesIO()
+        back.save(bufferedio, format="PNG")
+    bufferedio.seek(0)
+    return (bufferedio)
 
 def getangel(image: BytesIO):
     with Image.open(BytesIO(image)) as t:
@@ -235,23 +246,7 @@ def fact():
     dict = {'success':True,'message':'yes this api works thank you very much'}
     return (dict)
 
-@app.route('/api/pixel',methods=['POST'])
-def pixelate():
-    if request.method == 'POST':
-        url = request.headers.get('url')
-        tok = request.headers.get('token')
-        r = checktoken(tok)
-        if r:
-            byt = getimg(url)
-            if byt == False:
-                return ('Error')
-            else:
-                img = getpixel(byt)
-                return send_file(img,attachment_filename='pixel.png')
-        else:
-            return ('Invalid token')
-    else:
-        return('Hey please post an image ffs!')
+
 @app.route('/api/wanted',methods=['POST'])
 def wanted():
     if request.method == 'POST':
@@ -264,6 +259,23 @@ def wanted():
                 return ('Error')
             else:
                 img = getwanted(byt)
+                return send_file(img,attachment_filename='pixel.png')
+        else:
+            return ('Invalid token')
+    else:
+        return('Hey please post an image ffs!')
+@app.route('/api/bad',methods=['POST'])
+def bad():
+    if request.method == 'POST':
+        url = request.headers.get('url')
+        tok = request.headers.get('token')
+        r = checktoken(tok)
+        if r:
+            byt = getimg(url)
+            if byt == False:
+                return ('Error')
+            else:
+                img = badimg(byt)
                 return send_file(img,attachment_filename='pixel.png')
         else:
             return ('Invalid token')
@@ -372,7 +384,94 @@ def satan():
             return ('Invalid token')
     else:
         return('Hey please post an image ffs!')
-
+@app.route('/api/paint',methods=['POST'])
+def paint():
+    if request.method == 'POST':
+        url = request.headers.get('url')
+        tok = request.headers.get('token')
+        r = checktoken(tok)
+        if r:
+            byt = getimg(url)
+            if byt == False:
+                return ('Error')
+            else:
+                img = getpaint(byt)
+                return send_file(img,attachment_filename='pixel.png')
+        else:
+            return ('Invalid token')
+    else:
+        return('Hey please post an image ffs!')
+@app.route('/api/evil',methods=['POST'])
+def evil():
+    if request.method == 'POST':
+        url = request.headers.get('url')
+        tok = request.headers.get('token')
+        r = checktoken(tok)
+        if r:
+            byt = getimg(url)
+            if byt == False:
+                return ('Error')
+            else:
+                img = getsithorld(byt)
+                return send_file(img,attachment_filename='pixel.png')
+        else:
+            return ('Invalid token')
+    else:
+        return('Hey please post an image ffs!')
+@app.route('/api/blur',methods=['POST'])
+def blur():
+    if request.method == 'POST':
+        url = request.headers.get('url')
+        tok = request.headers.get('token')
+        r = checktoken(tok)
+        if r:
+            byt = getimg(url)
+            if byt == False:
+                return ('Error')
+            else:
+                with Image.open(BytesIO) as img:
+                    blurred_image = img.filter(ImageFilter.BLUR)
+                    retimg = BytesIO()
+                    blurred_image.save(retimg, 'png')
+                retimg.seek(0)
+                return send_file(retimg,attachment_filename='pixel.png')
+        else:
+            return ('Invalid token')
+    else:
+        return('Hey please post an image ffs!')
+@app.route('/api/testpixel')
+def pixelgiftest():
+    im = Image.open('gen.gif')
+    flist = []
+    for frame in ImageSequence.Iterator(im):
+        imgSmall = frame.resize((32, 32), resample=Image.BILINEAR)
+        fim = imgSmall.resize(frame.size, Image.NEAREST)
+        flist.append(fim)
+    retimg = BytesIO()
+    flist[0].save(retimg, format='gif',save_all=True,append_images=flist[1:])
+    retimg.seek(0)
+    return send_file(retimg, attachment_filename='pixel.gif')
+@app.route('/api/invert',methods=['POST'])
+def invert():
+    if request.method == 'POST':
+        url = request.headers.get('url')
+        tok = request.headers.get('token')
+        r = checktoken(tok)
+        if r:
+            byt = getimg(url)
+            if byt == False:
+                return ('Error')
+            else:
+                with Image.open(BytesIO) as img:
+                    blurred_image = ImageOps.invert(img)
+                    retimg = BytesIO()
+                    blurred_image.save(retimg, 'png')
+                retimg.seek(0)
+                return send_file(retimg,attachment_filename='pixel.png')
+        else:
+            return ('Invalid token')
+    else:
+        return('Hey please post an image ffs!')
 if __name__ == '__main__':
     app.debug = True
     app.run()

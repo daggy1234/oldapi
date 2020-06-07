@@ -3,6 +3,20 @@ from io import BytesIO
 from PIL import Image,ImageDraw,ImageFont,ImageEnhance,ImageOps,ImageFilter,ImageSequence
 app = Flask(__name__)
 import requests
+import wand.image as wi
+def getsepia(image: BytesIO):
+    io =BytesIO(image)
+    io.seek(0)
+    with Image() as dst_image:
+        with Image(blob=io) as src_image:
+            for frame in src_image.sequence:
+                frame.sepia_tone(threshold=0.8)
+                dst_image.sequence.append(frame)
+        bts = dst_image.make_blob('gif')
+        i = BytesIO(bts)
+        i.seek(0)
+        return(i)
+
 def checktoken(tok):
     return (True)
     if str(tok) == 'atMoMn2Pg3EUmZ065QBvdJN4IcjNxCQRMv1oZTZWg98i7HelIdvJwHtZFKPgCtf':
@@ -27,6 +41,30 @@ def getpixel(image: BytesIO):
             imgSmall = frame.resize((32, 32), resample=Image.BILINEAR)
             fim = imgSmall.resize(frame.size, Image.NEAREST)
             flist.append(fim)
+        retimg = BytesIO()
+        flist[0].save(retimg, format='gif', save_all=True, append_images=flist[1:])
+    retimg.seek(0)
+    return(retimg)
+def getinvert(image: BytesIO):
+    io =BytesIO(image)
+    io.seek(0)
+    with Image.open(io) as t:
+        flist = []
+        for frame in ImageSequence.Iterator(t):
+            blurred_image = ImageOps.invert(frame)
+            flist.append(blurred_image)
+        retimg = BytesIO()
+        flist[0].save(retimg, format='gif', save_all=True, append_images=flist[1:])
+    retimg.seek(0)
+    return(retimg)
+def getblur(image: BytesIO):
+    io =BytesIO(image)
+    io.seek(0)
+    with Image.open(io) as t:
+        flist = []
+        for frame in ImageSequence.Iterator(t):
+            blurred_image = t.filter(ImageFilter.BLUR)
+            flist.append(blurred_image)
         retimg = BytesIO()
         flist[0].save(retimg, format='gif', save_all=True, append_images=flist[1:])
     retimg.seek(0)
@@ -453,12 +491,8 @@ def invert():
             if byt == False:
                 return ('Error')
             else:
-                with Image.open(BytesIO) as img:
-                    blurred_image = ImageOps.invert(img)
-                    retimg = BytesIO()
-                    blurred_image.save(retimg, 'png')
-                retimg.seek(0)
-                return send_file(retimg,attachment_filename='pixel.png')
+                retimg = getinvert(byt)
+                return send_file(retimg,attachment_filename='invert.gif')
         else:
             return ('Invalid token')
     else:
@@ -475,7 +509,24 @@ def pixel():
                 return ('Error')
             else:
                 retimg = getpixel(byt)
-                return send_file(retimg,attachment_filename='pixel.png')
+                return send_file(retimg,attachment_filename='pixel.gif')
+        else:
+            return ('Invalid token')
+    else:
+        return('Hey please post an image ffs!')
+@app.route('/api/sepia',methods=['POST'])
+def sepia():
+    if request.method == 'POST':
+        url = request.headers.get('url')
+        tok = request.headers.get('token')
+        r = checktoken(tok)
+        if r:
+            byt = getimg(url)
+            if byt == False:
+                return ('Error')
+            else:
+                retimg = getsepia(byt)
+                return send_file(retimg,attachment_filename='pixel.gif')
         else:
             return ('Invalid token')
     else:

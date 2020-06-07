@@ -15,8 +15,7 @@ io.seek(0)
 print('io dones')
 try:
     with Image.open(io) as t:
-        for frame in ImageSequence.Iterator(t):
-            frame.show()
+        t.save('output.gif')
 except:
     print(r.text)
 # io = BytesIO(cont)

@@ -464,7 +464,7 @@ def invert():
     else:
         return('Hey please post an image ffs!')
 @app.route('/api/pixel',methods=['POST'])
-def invert():
+def pixel():
     if request.method == 'POST':
         url = request.headers.get('url')
         tok = request.headers.get('token')

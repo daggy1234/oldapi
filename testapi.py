@@ -1,4 +1,4 @@
-url = 'https://dagbotapi.herokuapp.com/api/hitler'
+url = 'https://dagbotapi.herokuapp.com/api/pixel'
 headers = {'url':'https://images-ext-1.discordapp.net/external/AdEscMNKqK2H5KaauI1odPjapi0F-MaBJifN0cdMCCE/%3Fsize%3D1024/https/cdn.discordapp.com/avatars/491174779278065689/a_0a612584059f6dddecf5153881fced4a.gif','token':'atMoMn2Pg3EUmZ065QBvdJN4IcjNxCQRMv1oZTZWg98i7HelIdvJwHtZFKPgCtf'}
 import requests
 from io import BytesIO

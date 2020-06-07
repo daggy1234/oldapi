@@ -3,7 +3,7 @@ headers = {'url':'https://images-ext-1.discordapp.net/external/AdEscMNKqK2H5Kaau
 import requests
 from io import BytesIO
 from PIL import Image,ImageSequence
-r = requests.post(url,headers)
+r = requests.post(url,headers=headers)
 print(r.status_code)
 print('hmmmm')
 

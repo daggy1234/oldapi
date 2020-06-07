@@ -81,17 +81,6 @@ def gethitler(image: BytesIO):
 
 
 
-def getpixel(image: BytesIO):
-    with Image.open(BytesIO(image)) as t:
-        imgSmall = t.resize((32, 32), resample=Image.BILINEAR)
-        # imgSmall = t.resize((256, 256))
-        fim = imgSmall.resize(t.size, Image.NEAREST)
-        retimg = BytesIO()
-        fim.save(retimg, 'png')
-
-    retimg.seek(0)
-    return (retimg)
-
 
 
 def getsatan(image: BytesIO):
@@ -452,6 +441,7 @@ def pixelgiftest():
     flist[0].save(retimg, format='gif',save_all=True,append_images=flist[1:])
     retimg.seek(0)
     return send_file(retimg, attachment_filename='pixel.gif')
+
 @app.route('/api/invert',methods=['POST'])
 def invert():
     if request.method == 'POST':
@@ -468,6 +458,23 @@ def invert():
                     retimg = BytesIO()
                     blurred_image.save(retimg, 'png')
                 retimg.seek(0)
+                return send_file(retimg,attachment_filename='pixel.png')
+        else:
+            return ('Invalid token')
+    else:
+        return('Hey please post an image ffs!')
+@app.route('/api/pixel',methods=['POST'])
+def invert():
+    if request.method == 'POST':
+        url = request.headers.get('url')
+        tok = request.headers.get('token')
+        r = checktoken(tok)
+        if r:
+            byt = getimg(url)
+            if byt == False:
+                return ('Error')
+            else:
+                retimg = getpixel(byt)
                 return send_file(retimg,attachment_filename='pixel.png')
         else:
             return ('Invalid token')

@@ -4,6 +4,7 @@ from PIL import Image,ImageDraw,ImageFont,ImageEnhance,ImageOps,ImageFilter,Imag
 app = Flask(__name__)
 import requests
 def checktoken(tok):
+    return (True)
     if str(tok) == 'atMoMn2Pg3EUmZ065QBvdJN4IcjNxCQRMv1oZTZWg98i7HelIdvJwHtZFKPgCtf':
         return(True)
 def getimg(url):

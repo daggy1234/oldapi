@@ -16,7 +16,72 @@ def getsepia(image: BytesIO):
         i = BytesIO(bts)
         i.seek(0)
         return(i)
-
+def getwasted(image: BytesIO):
+    io = BytesIO(image)
+    io.seek(0)
+    with wi.Image() as dst_image:
+        with wi.Image(blob=io) as src_image:
+            for frame in src_image.sequence:
+                frame.transform_colorspace('gray')
+                dst_image.sequence.append(frame)
+        bts = dst_image.make_blob()
+        i = BytesIO(bts)
+        i.seek(0)
+    im = Image.open(i)
+    fil = Image.open('wasted.png')
+    w, h = im.size
+    filr = fil.resize((w, h), 5)
+    flist = []
+    for frame in ImageSequence.Iterator(im):
+        ci = im.convert('RGBA')
+        ci.paste(filr, mask=filr)
+        flist.append(ci)
+    retimg = BytesIO()
+    flist[0].save(retimg,format='gif', save_all=True, append_images=flist)
+    retimg.seek(0)
+    return(retimg)
+def getgay(image:BytesIO):
+    io = BytesIO(image)
+    io.seek(0)
+    with Image.open(io) as im:
+        flist = []
+        w, h = im.size
+        fil = Image.open('gayfilter.png')
+        filr = fil.resize((w, h), 5)
+        for frame in ImageSequence.Iterator(im):
+            ci = frame.convert('RGBA')
+            ci.paste(filr, mask=filr)
+            ci.show()
+            flist.append(ci)
+        retimg = BytesIO()
+        flist[0].save(retimg, format='gif', save_all=True, append_images=flist)
+    retimg.seek(0)
+    return (retimg)
+def getcharc(image: BytesIO):
+    io =BytesIO(image)
+    io.seek(0)
+    with wi.Image() as dst_image:
+        with wi.Image(blob=io) as src_image:
+            for frame in src_image.sequence:
+                frame.transform_colorspace("gray")
+                frame.sketch(0.5, 0.0, 98.0)
+                dst_image.sequence.append(frame)
+        bts = dst_image.make_blob()
+        i = BytesIO(bts)
+        i.seek(0)
+        return(i)
+def getpaint(image: BytesIO):
+    io =BytesIO(image)
+    io.seek(0)
+    with wi.Image() as dst_image:
+        with wi.Image(blob=io) as src_image:
+            for frame in src_image.sequence:
+                frame.oil_paint(sigma=3)
+                dst_image.sequence.append(frame)
+        bts = dst_image.make_blob()
+        i = BytesIO(bts)
+        i.seek(0)
+        return(i)
 def checktoken(tok):
     return (True)
     if str(tok) == 'atMoMn2Pg3EUmZ065QBvdJN4IcjNxCQRMv1oZTZWg98i7HelIdvJwHtZFKPgCtf':
@@ -231,17 +296,6 @@ def getthoughtimg(image: BytesIO, text):
 
 
 
-def getpaint(image: BytesIO):
-    avatar = Image.open(BytesIO(image))
-    avatar = avatar.convert("RGBA")
-    avatar = avatar.resize((1024, 1024))
-    eightbit = avatar.resize((32, 32))
-    eightbit = eightbit.resize((1024, 1024))
-    eightbit = eightbit.quantize(colors=32)
-    bufferedio = BytesIO()
-    eightbit.save(bufferedio, format="PNG")
-    bufferedio.seek(0)
-    return (bufferedio)
 
 def badimg(image : BytesIO):
     with Image.open(BytesIO(image)) as im:
@@ -526,6 +580,57 @@ def sepia():
                 return ('Error')
             else:
                 retimg = getsepia(byt)
+                return send_file(retimg,attachment_filename='pixel.gif')
+        else:
+            return ('Invalid token')
+    else:
+        return('Hey please post an image ffs!')
+@app.route('/api/wasted',methods=['POST'])
+def wasted():
+    if request.method == 'POST':
+        url = request.headers.get('url')
+        tok = request.headers.get('token')
+        r = checktoken(tok)
+        if r:
+            byt = getimg(url)
+            if byt == False:
+                return ('Error')
+            else:
+                retimg = getwasted(byt)
+                return send_file(retimg,attachment_filename='pixel.gif')
+        else:
+            return ('Invalid token')
+    else:
+        return('Hey please post an image ffs!')
+@app.route('/api/gay',methods=['POST'])
+def gay():
+    if request.method == 'POST':
+        url = request.headers.get('url')
+        tok = request.headers.get('token')
+        r = checktoken(tok)
+        if r:
+            byt = getimg(url)
+            if byt == False:
+                return ('Error')
+            else:
+                retimg = getgay(byt)
+                return send_file(retimg,attachment_filename='pixel.gif')
+        else:
+            return ('Invalid token')
+    else:
+        return('Hey please post an image ffs!')
+@app.route('/api/charcoal',methods=['POST'])
+def charcoal():
+    if request.method == 'POST':
+        url = request.headers.get('url')
+        tok = request.headers.get('token')
+        r = checktoken(tok)
+        if r:
+            byt = getimg(url)
+            if byt == False:
+                return ('Error')
+            else:
+                retimg = getcharc(byt)
                 return send_file(retimg,attachment_filename='pixel.gif')
         else:
             return ('Invalid token')

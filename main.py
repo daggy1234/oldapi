@@ -8,7 +8,6 @@ from functools import partial
 import asyncio
 app = FastAPI()
 async def checktoken(tok):
-    return (True)
     if str(tok) == 'atMoMn2Pg3EUmZ065QBvdJN4IcjNxCQRMv1oZTZWg98i7HelIdvJwHtZFKPgCtf':
         return(True)
 async def getimg(url):
@@ -454,7 +453,7 @@ async def paint(token: str = Header(None),url:str = Header(None)):
         if byt == False:
             return JSONResponse(status_code=400,content={'error':"We were unable to use the link your provided"})
         else:
-            fn = partial(getpixel,byt)
+            fn = partial(getpaint,byt)
             loop = asyncio.get_event_loop()
             img = await loop.run_in_executor(None,fn)
             if isinstance(img,BytesIO):

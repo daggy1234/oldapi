@@ -88,6 +88,8 @@ def checktoken(tok):
         return(True)
 def getimg(url):
     r = requests.get(url)
+    print(url)
+    print(r)
     if r.status_code == 200:
         # imgf = await aiofiles.open(f'avatar{name}.png', mode='wb')
         byt = r.content

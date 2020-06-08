@@ -537,18 +537,12 @@ def pixelgiftest():
 @app.route('/api/invert',methods=['POST'])
 def invert():
     if request.method == 'POST':
-        url = request.headers.get('url')
+        url = request.headers.get('byt')
         tok = request.headers.get('token')
         r = checktoken(tok)
-        if r:
-            byt = getimg(url)
-            if byt == False:
-                return ('Error')
-            else:
-                retimg = getinvert(byt)
-                return send_file(retimg,attachment_filename='invert.gif')
-        else:
-            return ('Invalid token')
+        retimg = getinvert(url)
+        return send_file(retimg,attachment_filename='invert.gif')
+
     else:
         return('Hey please post an image ffs!')
 @app.route('/api/pixel',methods=['POST'])

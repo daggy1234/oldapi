@@ -1,9 +1,10 @@
 from fastapi import FastAPI,Header
 import aiohttp
-from fastapi.responses import StreamingResponse,JSONResponse
+from fastapi.responses import StreamingResponse,JSONResponse,RedirectResponse
 from io import BytesIO
 from PIL import Image,ImageDraw,ImageFont,ImageEnhance,ImageOps,ImageFilter,ImageSequence
 import wand.image as wi
+import praw
 from functools import partial
 import asyncio
 app = FastAPI()
@@ -406,6 +407,18 @@ async def angel(token: str = Header(None),url:str = Header(None)):
                 return JSONResponse(status_code=500,content={"error":"The Image manipulation had a small"})
     else:
         return JSONResponse(status_code=401,content={'error':'Invalid token'})
+
+@app.get('/api')
+async def redirecttodocs():
+    return RedirectResponse(url='/redoc')
+
+@app.get('/server')
+async def serverredirect():
+    return RedirectResponse(url='https://discord.gg/4R72Pks')
+@app.get('/wrappers')
+async def comiongsoon():
+    return JSONResponse(status_code=404,content={"In the works":"Wrappers soon"})
+
 @app.post('/api/trash')
 async def trash(token: str = Header(None),url:str = Header(None)):
 

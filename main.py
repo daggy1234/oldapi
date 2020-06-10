@@ -9,7 +9,7 @@ from functools import partial
 import asyncio
 app = FastAPI()
 async def checktoken(tok):
-    if str(tok) == 'atMoMn2Pg3EUmZ065QBvdJN4IcjNxCQRMv1oZTZWg98i7HelIdvJwHtZFKPgCtf':
+    if str(tok) == 'sexytoken123#':
         return(True)
 async def getimg(url):
     async with aiohttp.ClientSession() as session:
@@ -612,7 +612,8 @@ async def gay(token: str = Header(None),url:str = Header(None)):
                 return JSONResponse(status_code=500,content={"error":"The Image manipulation had a small"})
     else:
         return JSONResponse(status_code=401,content={'error':'Invalid token'})
-@app.post('/api/charcoal')async def charcoal(token: str = Header(None),url:str = Header(None)):
+@app.post('/api/charcoal')
+async def charcoal(token: str = Header(None),url:str = Header(None)):
 
     r = await checktoken(token)
     if r:
